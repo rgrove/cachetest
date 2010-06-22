@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Cache Test</title>
+</head>
+<body>
+
+<h1>Cache Test</h1>
+
+<p>
+Click a link, wait for it to load, click back, click the link again. If you see
+a request in the server log or the random strings are different, your browser
+didn't cache the request.
+</p>
+
+<h2>Big max-age + far-future "Expires"</h2>
+<ul>
+    <li><a href="/random/5120">5KB</a></li>
+    <li><a href="/random/16384">16KB</a></li>
+    <li><a href="/random/26214">25.6KB</a> (iOS 3.2 max [iPad])</li>
+    <li><a href="/random/32768">32KB</a></li>
+    <li><a href="/random/52428">51.199KB</a> (iOS 4.0 max)</li>
+    <li><a href="/random/65536">64KB</a></li>
+    <li><a href="/random/131072">128KB</a></li>
+    <li><a href="/random/524288">512KB</a></li>
+    <li><a href="/random/1024000">1MB</a></li>
+    <li><a href="/random/2048000">2MB</a> (Android 2.1 max [roughly])</li>
+    <li><a href="/random/5120000">5MB</a></li>
+    <li><a href="/random/10240000">10MB</a></li>
+    <li><a href="/random/20971520">20MB</a></li>
+</ul>
+
+<h2>Big max-age + far-future "Expires" + gzip</h2>
+<ul>
+    <li><a href="/gzip/random/5120">5KB</a></li>
+    <li><a href="/gzip/random/16384">16KB</a></li>
+    <li><a href="/gzip/random/26214">25.6KB</a> (iOS 3.2 max [iPad])</li>
+    <li><a href="/gzip/random/32768">32KB</a></li>
+    <li><a href="/gzip/random/52428">51.199KB</a> (iOS 4.0 max)</li>
+    <li><a href="/gzip/random/65536">64KB</a></li>
+    <li><a href="/gzip/random/131072">128KB</a></li>
+    <li><a href="/gzip/random/524288">512KB</a></li>
+    <li><a href="/gzip/random/1024000">1MB</a></li>
+    <li><a href="/gzip/random/2048000">2MB</a> (Android 2.1 max [roughly])</li>
+    <li><a href="/gzip/random/5120000">5MB</a></li>
+    <li><a href="/gzip/random/10240000">10MB</a></li>
+    <li><a href="/gzip/random/20971520">20MB</a></li>
+</ul>
+
+</body>
+</html>
