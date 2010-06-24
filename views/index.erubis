@@ -20,8 +20,9 @@ didn't cache the request.
     <li><a href="/random/16384">16KB</a></li>
     <li><a href="/random/26214">25.6KB</a> (iOS 3.2 max [iPad])</li>
     <li><a href="/random/32768">32KB</a></li>
-    <li><a href="/random/52428">51.199KB</a> (iOS 4.0 max)</li>
+    <li><a href="/random/52428">51.199KB</a> (iOS 4.0 max [iPhone 3GS])</li>
     <li><a href="/random/65536">64KB</a></li>
+    <li><a href="/random/104857">102.399KB</a> (iOS 4.0 max [iPhone 4]</li>
     <li><a href="/random/131072">128KB</a></li>
     <li><a href="/random/524288">512KB</a></li>
     <li><a href="/random/1024000">1MB</a></li>
@@ -37,8 +38,9 @@ didn't cache the request.
     <li><a href="/gzip/random/16384">16KB</a></li>
     <li><a href="/gzip/random/26214">25.6KB</a> (iOS 3.2 max [iPad])</li>
     <li><a href="/gzip/random/32768">32KB</a></li>
-    <li><a href="/gzip/random/52428">51.199KB</a> (iOS 4.0 max)</li>
+    <li><a href="/gzip/random/52428">51.199KB</a> (iOS 4.0 max [iPhone 3GS])</li>
     <li><a href="/gzip/random/65536">64KB</a></li>
+    <li><a href="/gzip/random/104857">102.399KB</a> (iOS 4.0 max [iPhone 4]</li>
     <li><a href="/gzip/random/131072">128KB</a></li>
     <li><a href="/gzip/random/524288">512KB</a></li>
     <li><a href="/gzip/random/1024000">1MB</a></li>
