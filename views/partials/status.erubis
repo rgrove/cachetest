@@ -1,0 +1,28 @@
+<table>
+    <caption>Test Status</caption>
+    <thead>
+        <tr>
+            <th>Component</th>
+            <th>Current Size</th>
+            <th>Max. Size</th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <tr>
+            <td>CSS</td>
+            <td><%== @cookies[:css][:size] %></td>
+            <td><%== @cookies[:css][:max] || '?' %></td>
+        </tr>
+        <tr>
+            <td>JS</td>
+            <td><%== @cookies[:js][:size] %></td>
+            <td><%== @cookies[:js][:max] || '?' %></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
+<strong>Note:</strong> Component sizes larger than <%== @max_test_size %> will
+not be tested.
+</p>

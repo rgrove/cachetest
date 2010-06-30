@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Test Page A</title>
+
+    <script>
+    (function () {
+        var COOKIE_TIME = new Date().getTime()
+            NEXT_URL    = '<%== @next_url %>';
+
+        <%= erubis(:'partials/shared_js') %>
+
+        setCookie('cache_page_time', COOKIE_TIME);
+
+        window.onload = function () {
+            setTimeout(function () {
+                window.location = NEXT_URL;
+            }, 500);
+        };
+    }());
+    </script>
+
+    <% if @request_css %>
+        <link rel="stylesheet" type="text/css" href="/random/<%== @id %>/<%== @cookies[:css][:size] %>.css">
+    <% end %>
+</head>
+<body>
+
+<%= erubis(:'partials/status') %>
+
+<% if @request_js %>
+    <script src="/random/<%== @id %>/<%== @cookies[:js][:size] %>.js"></script>
+<% end %>
+
+</body>
+</html>

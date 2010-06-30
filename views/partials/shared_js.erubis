@@ -1,0 +1,20 @@
+function getCookie(name) {
+    var cookie,
+        cookies = document.cookie.split(/\s*;\s*/),
+        i, len;
+
+    for (i = 0, len = cookies.length; i < len; ++i) {
+        cookie = cookies[i].split('=');
+
+        if (decodeURIComponent(cookie[0]) === name) {
+            return decodeURIComponent(cookie[1]);
+        }
+    }
+
+    return undefined;
+}
+
+function setCookie(name, value) {
+    document.cookie = encodeURIComponent(name) + '=' +
+            encodeURIComponent(value) + ';path=/';
+}
