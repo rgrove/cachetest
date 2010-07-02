@@ -12,9 +12,6 @@ require 'sinatra'
 
 class CacheTest < Sinatra::Base
   use Rack::CommonLogger
-  use Rack::Deflater
-
-  # set :public, 'public'
 
   # Extension to content-type map.
   CONTENT_TYPES = {
