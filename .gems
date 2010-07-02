@@ -1,0 +1,2 @@
+erubis --version '~> 2.6.5'
+sinatra --version 1.0
