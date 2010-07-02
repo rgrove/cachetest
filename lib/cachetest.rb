@@ -23,36 +23,41 @@ class CacheTest < Sinatra::Base
     'js'   => 'application/javascript',
   }
 
-  # Maximum adjustment size in bytes.
-  MAX_ADJUST = 1048576
-
   # Maximum component size to test in bytes.
-  MAX_TEST_SIZE = 4194304
+  SIZE_MAX = 4194304
+
+  # Minimum component size to test in bytes.
+  SIZE_MIN = 1024
 
   get '/' do
     # Generate a new unique session id.
     @id = stamp
 
-    # Clear all existing cachetest cookies.
-    request.cookies.each_key do |name|
-      response.delete_cookie(name) if name =~ /^cache_/
+    # Set initial cookie values.
+    ['css', 'js'].each do |type|
+      response.set_cookie("cache_#{type}_delta",     :value => (SIZE_MIN + SIZE_MAX) / 2, :path => '/')
+      response.set_cookie("cache_#{type}_iteration", :value => 0,        :path => '/')
+      response.set_cookie("cache_#{type}_max",       :value => 0,        :path => '/')
+      response.set_cookie("cache_#{type}_size",      :value => (SIZE_MIN + SIZE_MAX) / 2, :path => '/')
+      response.set_cookie("cache_#{type}_status",    :value => 'new',    :path => '/')
     end
 
     # Render the index page.
     erubis :index
   end
 
-  get '/a/:id' do |id|
+  get '/a/:type/:id' do |type, id|
     get_cookies
 
-    adjust(:css)
-    adjust(:js)
+    @type = type.to_sym
 
-    @id            = id
-    @max_test_size = MAX_TEST_SIZE
-    @request_css   = !@cookies[:css][:max]
-    @request_js    = !@cookies[:js][:max]
-    @next_url      = "/b/#{@id}"
+    adjust_delta(@type)
+
+    @id           = id
+    @next_url     = "/b/#{@type}/#{@id}"
+    @request_css  = @type == :css && @cookies[:css][:delta] != 0
+    @request_js   = @type == :js && @cookies[:js][:delta] != 0
+    @size_max     = SIZE_MAX
 
     response['Content-Type']  = 'text/html;charset=utf-8'
     response['Cache-Control'] = 'no-store;max-age=0;must-revalidate'
@@ -61,14 +66,16 @@ class CacheTest < Sinatra::Base
     erubis :a
   end
 
-  get '/b/:id' do |id|
+  get '/b/:type/:id' do |type, id|
     get_cookies
 
-    @id            = id
-    @max_test_size = MAX_TEST_SIZE
-    @request_css   = !@cookies[:css][:max]
-    @request_js    = !@cookies[:js][:max]
-    @next_url      = "/a/#{@id}"
+    @type = type.to_sym
+
+    @id          = id
+    @next_url    = "/a/#{@type}/#{@id}"
+    @request_css = @type == :css && @cookies[:css][:delta] != 0
+    @request_js  = @type == :js && @cookies[:js][:delta] != 0
+    @size_max    = SIZE_MAX
 
     response['Content-Type']  = 'text/html;charset=utf-8'
     response['Cache-Control'] = 'no-store;max-age=0;must-revalidate'
@@ -90,7 +97,7 @@ class CacheTest < Sinatra::Base
     # fall back to text/plain if none match.
     type = CONTENT_TYPES[ext] || 'text/plain'
 
-    # if length > 1128005 && ext == 'js'
+    # if length > 1128005
     #   # sanity check
     #   response['Cache-Control'] = 'no-store;max-age=0;must-revalidate'
     #   response['Expires']       = 'Fri, 01 Apr 2010 01:00:00 GMT'
@@ -124,51 +131,68 @@ class CacheTest < Sinatra::Base
   end
 
   helpers do
-    def adjust(type)
+    def adjust_delta(type)
       values = @cookies[type]
 
-      unless values[:max] || values[:status] == 'new'
+      response.set_cookie("cache_#{type}_iteration", :value => values[:iteration] += 1, :path => '/')
+
+      unless values[:delta] == 0 || values[:status] == 'new'
 
         if values[:status] == 'miss'
           # Cache miss: over the max size. Adjust downward.
-          values[:adjust] = [values[:adjust] / 2, 1].max if values[:adjust] > 1
-          values[:size]  -= values[:adjust]
-          response.set_cookie("cache_#{type}_adjust", :value => values[:adjust], :path => '/')
+          values[:delta] = [(values[:size] - values[:max]) / 2, SIZE_MIN].max
+          values[:size] -= values[:delta]
+          values[:max]   = values[:size] if values[:size] < values[:max] # account for adaptive cache limits
 
         else
           # Cache hit: under the max size.
-          if values[:adjust] == 1 || values[:size] >= MAX_TEST_SIZE
-            # We either found the max size or hit the test ceiling
-            values[:size] = MAX_TEST_SIZE if values[:size] > MAX_TEST_SIZE
-            values[:max]  = values[:size]
-            response.set_cookie("cache_#{type}_max", :value => values[:max], :path => '/')
+          values[:max] = values[:size] if values[:size] > values[:max]
+
+          if values[:delta] == SIZE_MIN || values[:size] >= SIZE_MAX
+            # We either found the max size or hit the test ceiling, so stop.
+            values[:delta] = 0
 
           else
-            # Adjust upward to a max of 4MB.
-            values[:adjust] = [values[:adjust] + (values[:adjust] / 4), MAX_ADJUST].min
-            values[:size]  += values[:adjust]
-            response.set_cookie("cache_#{type}_adjust", :value => values[:adjust], :path => '/')
+            # Adjust upward.
+            values[:delta] = [(values[:delta] * 1.5).to_i, SIZE_MAX].min
+            values[:size]  = [values[:size] + values[:delta], SIZE_MAX].min
           end
+
         end
 
-        response.set_cookie("cache_#{type}_size", :value => values[:size], :path => '/')
+        response.set_cookie("cache_#{type}_delta", :value => values[:delta], :path => '/')
+        response.set_cookie("cache_#{type}_max",   :value => values[:max],   :path => '/')
+        response.set_cookie("cache_#{type}_size",  :value => values[:size],  :path => '/')
       end
     end
 
+    def format_size(bytes)
+      bytes >= 1024 ? "#{bytes / 1024}KB" : bytes.to_s
+    end
+
     def get_cookies
+      # Cookies:
+      #   - cache_<type>_delta: Delta between the previous size and the current size. Delta of 0 halts further testing.
+      #   - cache_<type>_iteration: Current test iteration.
+      #   - cache_<type>_max: Maximum size that has resulted in a cache hit so far.
+      #   - cache_<type>_size: Most recent size tested.
+      #   - cache_<type>_status: 'hit' if the last test was a cache hit, 'miss' if it was a miss.
+
       @cookies = {
         :css => {
-          :adjust => (request.cookies['cache_css_adjust'] || 65536).to_i,
-          :max    => request.cookies['cache_css_max'],
-          :size   => (request.cookies['cache_css_size'] || 65536).to_i,
-          :status => request.cookies['cache_css_status'] || 'new'
+          :delta     => request.cookies['cache_css_delta'].to_i,
+          :iteration => request.cookies['cache_css_iteration'].to_i,
+          :max       => request.cookies['cache_css_max'].to_i,
+          :size      => request.cookies['cache_css_size'].to_i,
+          :status    => request.cookies['cache_css_status']
         },
 
         :js => {
-          :adjust => (request.cookies['cache_js_adjust'] || 65536).to_i,
-          :max    => request.cookies['cache_js_max'],
-          :size   => (request.cookies['cache_js_size'] || 65536).to_i,
-          :status => request.cookies['cache_js_status'] || 'new'
+          :delta     => request.cookies['cache_js_delta'].to_i,
+          :iteration => request.cookies['cache_js_iteration'].to_i,
+          :max       => request.cookies['cache_js_max'].to_i,
+          :size      => request.cookies['cache_js_size'].to_i,
+          :status    => request.cookies['cache_js_status']
         }
       }
     end

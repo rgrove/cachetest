@@ -1,28 +1,37 @@
-<table>
+<table class="status">
     <caption>Test Status</caption>
     <thead>
         <tr>
             <th>Component</th>
             <th>Current Size</th>
+            <th>Current Delta</th>
             <th>Max. Size</th>
+            <th>Iteration</th>
         </tr>
     </thead>
     <tfoot></tfoot>
     <tbody>
-        <tr>
-            <td>CSS</td>
-            <td><%== @cookies[:css][:size] %></td>
-            <td><%== @cookies[:css][:max] || '?' %></td>
-        </tr>
-        <tr>
-            <td>JS</td>
-            <td><%== @cookies[:js][:size] %></td>
-            <td><%== @cookies[:js][:max] || '?' %></td>
-        </tr>
+        <% if @type == :css %>
+            <tr>
+                <td>CSS</td>
+                <td><%== format_size(@cookies[:css][:size]) %></td>
+                <td><%== format_size(@cookies[:css][:delta]) %></td>
+                <td><%== format_size(@cookies[:css][:max]) %></td>
+                <td><%== @cookies[:css][:iteration] %></td>
+            </tr>
+        <% elsif @type == :js %>
+            <tr>
+                <td>JS</td>
+                <td><%== format_size(@cookies[:js][:size]) %></td>
+                <td><%== format_size(@cookies[:js][:delta]) %></td>
+                <td><%== format_size(@cookies[:js][:max]) %></td>
+                <td><%== @cookies[:js][:iteration] %></td>
+            </tr>
+        <% end %>
     </tbody>
 </table>
 
 <p>
-<strong>Note:</strong> Component sizes larger than <%== @max_test_size %> will
+<strong>Note:</strong> Component sizes larger than <%== format_size(@size_max) %> will
 not be tested.
 </p>

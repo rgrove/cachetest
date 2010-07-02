@@ -21,6 +21,8 @@
     }());
     </script>
 
+    <%= erubis(:'partials/shared_css') %>
+
     <% if @request_css %>
         <link rel="stylesheet" type="text/css" href="/random/<%== @id %>/<%== @cookies[:css][:size] %>.css">
     <% end %>

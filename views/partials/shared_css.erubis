@@ -1,0 +1,5 @@
+<style>
+.status { border: 1px solid #cfcfcf; }
+.status td, .status th { padding: 4px; }
+.finished .status { background-color: #d2ffcf; }
+</style>

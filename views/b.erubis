@@ -6,31 +6,22 @@
 
     <script>
     (function () {
-        var COOKIE_TIME = getCookie('cache_page_time'),
-            NEXT_URL    = '<%== @next_url %>';
+        var COOKIE_PREFIX = 'cache_<%== @type %>_',
+            COOKIE_TIME   = getCookie('cache_page_time'),
+            NEXT_URL      = '<%== @next_url %>';
 
         <%= erubis(:'partials/shared_js') %>
 
-        setCookie('cache_css_time', COOKIE_TIME);
-        setCookie('cache_js_time', COOKIE_TIME);
+        setCookie(COOKIE_PREFIX + 'time', COOKIE_TIME);
 
         window.onload = function () {
-            var css_max    = getCookie('cache_css_max'),
-                css_time   = getCookie('cache_css_time'),
-                css_status = css_time === COOKIE_TIME ? 'hit' : 'miss',
-                js_max     = getCookie('cache_js_max'),
-                js_time    = getCookie('cache_js_time'),
-                js_status  = js_time === COOKIE_TIME ? 'hit' : 'miss';
+            var delta  = +getCookie(COOKIE_PREFIX + 'delta'), // note the typecast to Number
+                time   = getCookie(COOKIE_PREFIX + 'time'),
+                status = time === COOKIE_TIME ? 'hit' : 'miss';
 
-            if (!css_max) {
-                setCookie('cache_css_status', css_status);
-            }
+            if (delta) {
+                setCookie(COOKIE_PREFIX + 'status', status);
 
-            if (!js_max) {
-                setCookie('cache_js_status', js_status);
-            }
-
-            if (!css_max || !js_max) {
                 setTimeout(function () {
                     window.location = NEXT_URL;
                 }, 500);
@@ -41,13 +32,11 @@
     }());
     </script>
 
+    <%= erubis(:'partials/shared_css') %>
+
     <% if @request_css %>
         <link rel="stylesheet" type="text/css" href="/random/<%== @id %>/<%== @cookies[:css][:size] %>.css">
     <% end %>
-
-    <style>
-    .finished table { background-color: #d2ffcf; }
-    </style>
 </head>
 <body>
 
