@@ -19,6 +19,8 @@
                 time   = getCookie(COOKIE_PREFIX + 'time'),
                 status = time === COOKIE_TIME ? 'hit' : 'miss';
 
+            document.getElementById('status').innerHTML = status;
+
             if (delta) {
                 setCookie(COOKIE_PREFIX + 'status', status);
 

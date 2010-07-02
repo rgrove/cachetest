@@ -5,6 +5,7 @@
             <th>Component</th>
             <th>Current Size</th>
             <th>Current Delta</th>
+            <th>Current Result</th>
             <th>Max. Size</th>
             <th>Iteration</th>
         </tr>
@@ -16,6 +17,7 @@
                 <td>CSS</td>
                 <td><%== format_size(@cookies[:css][:size]) %></td>
                 <td><%== format_size(@cookies[:css][:delta]) %></td>
+                <td id="status"></td>
                 <td><%== format_size(@cookies[:css][:max]) %></td>
                 <td><%== @cookies[:css][:iteration] %></td>
             </tr>
@@ -24,6 +26,7 @@
                 <td>JS</td>
                 <td><%== format_size(@cookies[:js][:size]) %></td>
                 <td><%== format_size(@cookies[:js][:delta]) %></td>
+                <td id="status"></td>
                 <td><%== format_size(@cookies[:js][:max]) %></td>
                 <td><%== @cookies[:js][:iteration] %></td>
             </tr>
