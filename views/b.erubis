@@ -22,9 +22,11 @@
             if (delta) {
                 setCookie(COOKIE_PREFIX + 'status', status);
 
-                setTimeout(function () {
-                    window.location = NEXT_URL;
-                }, 500);
+                <% unless @manual %>
+                    setTimeout(function () {
+                        window.location = NEXT_URL;
+                    }, 500);
+                <% end %>
             } else {
                 document.body.className = 'finished';
             }
@@ -41,6 +43,10 @@
 <body>
 
 <%= erubis(:'partials/status') %>
+
+<% if @manual && (@request_css || @request_js) %>
+    <a href="<%== @next_url %>">Next iteration &raquo;</a>
+<% end %>
 
 <% if @request_js %>
     <script src="/random/<%== @id %>/<%== @cookies[:js][:size] %>.js"></script>

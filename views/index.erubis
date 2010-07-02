@@ -9,8 +9,10 @@
 <h1>Cache Test</h1>
 
 <ul>
-    <li><a href="/a/css/<%= @id %>">Click here to test CSS</a></li>
-    <li><a href="/a/js/<%= @id %>">Click here to test JS</a></li>
+    <li><a href="/a/css/auto/<%= @id %>">Click here to test CSS automatically</a></li>
+    <li><a href="/a/css/manual/<%= @id %>">Click here to test CSS manually</a></li>
+    <li><a href="/a/js/auto/<%= @id %>">Click here to test JS automatically</a></li>
+    <li><a href="/a/js/manual/<%= @id %>">Click here to test JS manually</a></li>
 </ul>
 
 </body>

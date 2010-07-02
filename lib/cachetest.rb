@@ -46,18 +46,18 @@ class CacheTest < Sinatra::Base
     erubis :index
   end
 
-  get '/a/:type/:id' do |type, id|
+  get '/a/:type/:step/:id' do |type, step, id|
     get_cookies
 
     @type = type.to_sym
 
     adjust_delta(@type)
 
-    @id           = id
-    @next_url     = "/b/#{@type}/#{@id}"
-    @request_css  = @type == :css && @cookies[:css][:delta] != 0
-    @request_js   = @type == :js && @cookies[:js][:delta] != 0
-    @size_max     = SIZE_MAX
+    @id          = id
+    @next_url    = "/b/#{@type}/#{step}/#{@id}"
+    @request_css = @type == :css && @cookies[:css][:delta] != 0
+    @request_js  = @type == :js && @cookies[:js][:delta] != 0
+    @size_max    = SIZE_MAX
 
     response['Content-Type']  = 'text/html;charset=utf-8'
     response['Cache-Control'] = 'no-store;max-age=0;must-revalidate'
@@ -66,13 +66,14 @@ class CacheTest < Sinatra::Base
     erubis :a
   end
 
-  get '/b/:type/:id' do |type, id|
+  get '/b/:type/:step/:id' do |type, step, id|
     get_cookies
 
     @type = type.to_sym
 
     @id          = id
-    @next_url    = "/a/#{@type}/#{@id}"
+    @manual      = step == 'manual'
+    @next_url    = "/a/#{@type}/#{step}/#{@id}"
     @request_css = @type == :css && @cookies[:css][:delta] != 0
     @request_js  = @type == :js && @cookies[:js][:delta] != 0
     @size_max    = SIZE_MAX
