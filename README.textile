@@ -1,6 +1,6 @@
 h1. CacheTest
 
-CacheTest is an extremely simple Sinatra app for testing browser cache characteristics.
+CacheTest is a Sinatra app for testing browser cache characteristics.
 
 h2. Getting Started
 
