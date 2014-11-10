@@ -11,8 +11,9 @@ require 'erubis'
 require 'sinatra'
 
 class CacheTest < Sinatra::Base
+  # Configure Sinatra
+  set :views, Proc.new { File.join(root, "/../views") }
   use Rack::CommonLogger
-
   # Extension to content-type map.
   CONTENT_TYPES = {
     'css'  => 'text/css',
@@ -40,7 +41,7 @@ class CacheTest < Sinatra::Base
     end
 
     # Render the index page.
-    erubis :index
+    erb :index
   end
 
   get '/a/:type/:step/:id' do |type, step, id|
@@ -60,7 +61,7 @@ class CacheTest < Sinatra::Base
     response['Cache-Control'] = 'no-store;max-age=0;must-revalidate'
     response['Expires']       = 'Fri, 01 Apr 2010 01:00:00 GMT'
 
-    erubis :a
+    erb :a
   end
 
   get '/b/:type/:step/:id' do |type, step, id|
@@ -79,7 +80,7 @@ class CacheTest < Sinatra::Base
     response['Cache-Control'] = 'no-store;max-age=0;must-revalidate'
     response['Expires']       = 'Fri, 01 Apr 2010 01:00:00 GMT'
 
-    erubis :b
+    erb :b
   end
 
   # url format: /random/<id>/<bytes>[.<extension>]
