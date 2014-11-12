@@ -10,7 +10,7 @@
             COOKIE_TIME   = getCookie('cache_page_time'),
             NEXT_URL      = '<%== @next_url %>';
 
-        <%= erubis(:'partials/shared_js') %>
+        <%= erb(:'partials/shared_js') %>
 
         setCookie(COOKIE_PREFIX + 'time', COOKIE_TIME);
 
@@ -36,7 +36,7 @@
     }());
     </script>
 
-    <%= erubis(:'partials/shared_css') %>
+    <%= erb(:'partials/shared_css') %>
 
     <% if @request_css %>
         <link rel="stylesheet" type="text/css" href="/random/<%== @id %>/<%== @cookies[:css][:size] %>.css">
@@ -44,7 +44,7 @@
 </head>
 <body>
 
-<%= erubis(:'partials/status') %>
+<%= erb(:'partials/status') %>
 
 <% if @manual && (@request_css || @request_js) %>
     <a href="<%== @next_url %>">Next iteration &raquo;</a>
